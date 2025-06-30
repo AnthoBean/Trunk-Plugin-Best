@@ -29,7 +29,7 @@ def render_image(price, trend, forecast, mood):
     ]
 
     now = datetime.datetime.now()
-    updated_time = f"updated {int((datetime.datetime.now() - now).total_seconds() // 60)} minutes ago"
+    updated_time = "updated just now"
 
     box_width = 370
     box_height = 200
@@ -64,3 +64,9 @@ def render_image(price, trend, forecast, mood):
 
 
     image.save("static/image.bmp")
+    # Notify TRMNL via webhook
+    import requests
+    try:
+        requests.get("https://usetrmnl.com/api/custom_plugins/498803d1-bff0-4f07-8622-350eafe5588d")
+    except Exception as e:
+        print("Failed to notify TRMNL:", e)
