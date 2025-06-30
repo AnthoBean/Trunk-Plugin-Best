@@ -14,20 +14,28 @@ def display():
         response = requests.get(url)
         data = response.json()
 
-        prices = [float(entry["price"]) for entry in data]
-        current = prices[-1]
-        previous = prices[-2]
+        latest = data[0]
+        previous = data[1]
+        current = float(latest["price"])
 
-        trend = "Trending upward" if current > previous else "Trending downward"
-        forecast = "Rising for next 2 hours" if current > previous else "Falling soon"
+        trend = "Trending upward" if current > float(previous["price"]) else "Trending downward"
+        forecast = "Rising for next 2 hours" if current > float(previous["price"]) else "Falling soon"
         mood = (
             "Low price — good time to use electricity" if current < 8 else
             "Moderate price" if current < 15 else
             "High price — avoid usage"
         )
 
+        from datetime import datetime, timezone
+
+        millis = int(latest["millisUTC"])
+        updated_time = datetime.fromtimestamp(millis / 1000, tz=timezone.utc)
+        now = datetime.now(timezone.utc)
+        minutes_ago = int((now - updated_time).total_seconds() / 60)
+        updated_str = f"{minutes_ago} min ago"
+
         # Render the BMP
-        render_image(f"{current:.2f}", trend, forecast, mood)
+        render_image(f"{current:.2f}", trend, forecast, mood, updated_str)
 
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d-plugin-T%H:%M:%S")
 
