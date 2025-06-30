@@ -1,6 +1,6 @@
 from PIL import Image, ImageDraw, ImageFont
 
-def render_image(price, trend, forecast, mood):
+def render_image(price, trend, forecast, mood, time_updated):
     # Create an 800x480 white image
     img = Image.new("RGB", (800, 480), color=(255, 255, 255))
     draw = ImageDraw.Draw(img)
@@ -81,23 +81,26 @@ def render_image(price, trend, forecast, mood):
     draw.text((trend_x, trend_y), trend, font=font_medium, fill=(0, 0, 0))
 
     # Draw forecast
-    forecast_text_width, forecast_text_height = draw.textsize(forecast, font=font_medium)
+    forecast_text = forecast
+    updated_text = f"Updated: {time_updated}"
+
+    forecast_text_width, _ = draw.textsize(forecast_text, font=font_medium)
+    updated_text_width, _ = draw.textsize(updated_text, font=font_small)
+
     forecast_x = forecast_bg_x0 + (forecast_bg_x1 - forecast_bg_x0 - forecast_text_width) // 2
-    forecast_y = forecast_bg_y0 + ( (forecast_bg_y1 - forecast_bg_y0 - forecast_text_height) // 2 )
-    draw.text((forecast_x, forecast_y), forecast, font=font_medium, fill=(0, 0, 0))
+    forecast_y = forecast_bg_y0 + 8  # Slightly down from top
+
+    updated_x = forecast_bg_x0 + (forecast_bg_x1 - forecast_bg_x0 - updated_text_width) // 2
+    updated_y = forecast_y + font_medium.size + 4  # More spacing between lines
+
+    draw.text((forecast_x, forecast_y), forecast_text, font=font_medium, fill=(0, 0, 0))
+    draw.text((updated_x, updated_y), updated_text, font=font_small, fill=(0, 0, 0))
 
     # Draw mood
     mood_text_width, mood_text_height = draw.textsize(mood, font=font_medium)
     mood_x = mood_bg_x0 + (mood_bg_x1 - mood_bg_x0 - mood_text_width) // 2
     mood_y = mood_bg_y0 + ( (mood_bg_y1 - mood_bg_y0 - mood_text_height) // 2 )
     draw.text((mood_x, mood_y), mood, font=font_medium, fill=(0, 0, 0))
-
-    # Draw updated timestamp in lower-right corner with proper spacing
-    updated_text = "Updated: now"
-    updated_text_width, updated_text_height = draw.textsize(updated_text, font=font_small)
-    updated_x = 800 - updated_text_width - padding
-    updated_y = 480 - updated_text_height - padding
-    draw.text((updated_x, updated_y), updated_text, font=font_small, fill=(0, 0, 0))
 
     # Save image as BMP
     img.save("static/image.bmp")
