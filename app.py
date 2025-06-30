@@ -105,3 +105,25 @@ def render_image(price, trend, forecast, mood, time_updated):
 
     # Save image as BMP
     img.save("static/image.bmp")
+
+
+# Flask app for Render deployment
+if __name__ == "__main__":
+    import os
+    port = int(os.environ.get("PORT", 8080))
+    from flask import Flask
+    app = Flask(__name__)
+
+    @app.route("/api/display")
+    def display():
+        from render import render_image
+        # Example values, replace with actual logic as needed
+        price, trend, forecast, mood, updated = "6.0", "Rising", "Stable", "Good", "5 min ago"
+        render_image(price, trend, forecast, mood, updated)
+        return {
+            "filename": "2025-06-30-plugin-T19:20:57",
+            "image_url": "https://trmnl-comed-plugin-sdi1.onrender.com/static/image.bmp",
+            "update_firmware": False
+        }
+
+    app.run(host="0.0.0.0", port=port, debug=True)
