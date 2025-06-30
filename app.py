@@ -13,50 +13,51 @@ def render_image(price, trend, forecast, mood, time_updated):
     # Define positions and sizes
     padding = 20
     section_spacing = 40
+    margin_x = 10
 
-    # Background rectangles with lighter gray fill
+    # Background rectangles with darker gray fill
     # Price background
-    price_bg_x0 = 0
+    price_bg_x0 = margin_x
     price_bg_y0 = 50
-    price_bg_x1 = 780
+    price_bg_x1 = 800 - margin_x
     price_bg_y1 = 130
     draw.rounded_rectangle(
         [(price_bg_x0, price_bg_y0), (price_bg_x1, price_bg_y1)],
         radius=15,
-        fill=(230, 230, 230)
+        fill=(200, 200, 200)
     )
 
     # Trend background
-    trend_bg_x0 = 0
+    trend_bg_x0 = margin_x
     trend_bg_y0 = price_bg_y1 + section_spacing
-    trend_bg_x1 = 780
+    trend_bg_x1 = 800 - margin_x
     trend_bg_y1 = trend_bg_y0 + 60
     draw.rounded_rectangle(
         [(trend_bg_x0, trend_bg_y0), (trend_bg_x1, trend_bg_y1)],
         radius=15,
-        fill=(230, 230, 230)
+        fill=(200, 200, 200)
     )
 
     # Forecast background
-    forecast_bg_x0 = 0
+    forecast_bg_x0 = margin_x
     forecast_bg_y0 = trend_bg_y1 + section_spacing
-    forecast_bg_x1 = 780
+    forecast_bg_x1 = 800 - margin_x
     forecast_bg_y1 = forecast_bg_y0 + 60
     draw.rounded_rectangle(
         [(forecast_bg_x0, forecast_bg_y0), (forecast_bg_x1, forecast_bg_y1)],
         radius=15,
-        fill=(230, 230, 230)
+        fill=(200, 200, 200)
     )
 
     # Mood background
-    mood_bg_x0 = 0
+    mood_bg_x0 = margin_x
     mood_bg_y0 = forecast_bg_y1 + section_spacing
-    mood_bg_x1 = 780
+    mood_bg_x1 = 800 - margin_x
     mood_bg_y1 = mood_bg_y0 + 60
     draw.rounded_rectangle(
         [(mood_bg_x0, mood_bg_y0), (mood_bg_x1, mood_bg_y1)],
         radius=15,
-        fill=(230, 230, 230)
+        fill=(200, 200, 200)
     )
 
     # Center text horizontally within each rectangle
@@ -68,7 +69,7 @@ def render_image(price, trend, forecast, mood, time_updated):
         return
 
     # Draw price
-    price_text = f"Price: ${price}"
+    price_text = f"{price}¢/kWh"
     price_text_width, price_text_height = draw.textsize(price_text, font=font_large)
     price_x = price_bg_x0 + (price_bg_x1 - price_bg_x0 - price_text_width) // 2
     price_y = price_bg_y0 + ( (price_bg_y1 - price_bg_y0 - price_text_height) // 2 )
