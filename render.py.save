@@ -1,0 +1,37 @@
+from PIL import Image, ImageDraw, ImageFontmport datetime
+import requests
+import os
+
+def render_image(price, trend, forecast, mood):
+    W, H = 800, 480
+    image = Image.new("RGB", (W, H), (255, 255, 255))
+    draw = ImageDraw.Draw(image)
+
+    box_color = (240, 240, 240)
+    border_color = (200, 200, 200)
+    mood_colors = {
+        "Low price — good time to use electricity": (200, 255, 200),
+        "Moderate price": (255, 255, 200),
+        "High price — avoid usage": (255, 200, 200)
+    }
+
+    font_path = "segoeuithis.ttf"  # adjust if using a different weight
+    font_large = ImageFont.truetype(font_path, 40)
+    font_medium = ImageFont.truetype(font_path, 28)
+    font_small = ImageFont.truetype(font_path, 20)
+
+    boxes = [
+        {"title": "current price", "content": f"{price}¢/kWh"},
+        {"title": "mood", "content": mood},
+        {"title": "trend", "content": trend},
+        {"title": "forecast", "content": forecast},
+    ]
+
+    now = datetime.datetime.now()
+    updated_time = now.strftime("updated %H:%M")
+
+    box_width = 370
+    box_height = 200
+    spacing = 30
+
+    for i, box in enumerate(
