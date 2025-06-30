@@ -22,8 +22,18 @@ def display():
         "High price — avoid usage"
     )
 
+    # Render the BMP
     render_image(f"{current:.2f}", trend, forecast, mood)
-    return send_file("static/image.bmp", mimetype="image/bmp")
+
+    # Construct JSON response
+    import datetime
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d-plugin-T%H:%M:%S")
+    from flask import jsonify
+    return jsonify({
+        "image_url": "https://trmnl-comed-plugin-sdi1.onrender.com/static/image.bmp",
+        "filename": timestamp,
+        "update_firmware": False
+    })
 
 if __name__ == "__main__":
     import os
