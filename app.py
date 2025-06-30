@@ -1,58 +1,103 @@
-from flask import Flask, send_file
-from render import render_image
-import requests
+from PIL import Image, ImageDraw, ImageFont
 
-app = Flask(__name__)
+def render_image(price, trend, forecast, mood):
+    # Create an 800x480 white image
+    img = Image.new("RGB", (800, 480), color=(255, 255, 255))
+    draw = ImageDraw.Draw(img)
 
-@app.route("/api/display")
-def display():
-    import datetime
-    from flask import jsonify
+    # Load fonts
+    font_large = ImageFont.truetype("arial.ttf", 48)
+    font_medium = ImageFont.truetype("arial.ttf", 32)
+    font_small = ImageFont.truetype("arial.ttf", 24)
 
-    try:
-        url = "https://hourlypricing.comed.com/api?type=5minutefeed"
-        response = requests.get(url)
-        data = response.json()
+    # Define positions and sizes
+    padding = 20
+    section_spacing = 40
 
-        latest = data[0]
-        previous = data[1]
-        current = float(latest["price"])
+    # Background rectangles with lighter gray fill
+    # Price background
+    price_bg_x0 = 100
+    price_bg_y0 = 50
+    price_bg_x1 = 700
+    price_bg_y1 = 130
+    draw.rounded_rectangle(
+        [(price_bg_x0, price_bg_y0), (price_bg_x1, price_bg_y1)],
+        radius=15,
+        fill=(230, 230, 230)
+    )
 
-        trend = "Trending upward" if current > float(previous["price"]) else "Trending downward"
-        forecast = "Rising for next 2 hours" if current > float(previous["price"]) else "Falling soon"
-        mood = (
-            "Low price — good time to use electricity" if current < 8 else
-            "Moderate price" if current < 15 else
-            "High price — avoid usage"
-        )
+    # Trend background
+    trend_bg_x0 = 100
+    trend_bg_y0 = price_bg_y1 + section_spacing
+    trend_bg_x1 = 700
+    trend_bg_y1 = trend_bg_y0 + 60
+    draw.rounded_rectangle(
+        [(trend_bg_x0, trend_bg_y0), (trend_bg_x1, trend_bg_y1)],
+        radius=15,
+        fill=(230, 230, 230)
+    )
 
-        from datetime import datetime, timezone
+    # Forecast background
+    forecast_bg_x0 = 100
+    forecast_bg_y0 = trend_bg_y1 + section_spacing
+    forecast_bg_x1 = 700
+    forecast_bg_y1 = forecast_bg_y0 + 60
+    draw.rounded_rectangle(
+        [(forecast_bg_x0, forecast_bg_y0), (forecast_bg_x1, forecast_bg_y1)],
+        radius=15,
+        fill=(230, 230, 230)
+    )
 
-        millis = int(latest["millisUTC"])
-        updated_time = datetime.fromtimestamp(millis / 1000, tz=timezone.utc)
-        now = datetime.now(timezone.utc)
-        minutes_ago = int((now - updated_time).total_seconds() / 60)
-        updated_str = f"{minutes_ago} min ago"
+    # Mood background
+    mood_bg_x0 = 100
+    mood_bg_y0 = forecast_bg_y1 + section_spacing
+    mood_bg_x1 = 700
+    mood_bg_y1 = mood_bg_y0 + 60
+    draw.rounded_rectangle(
+        [(mood_bg_x0, mood_bg_y0), (mood_bg_x1, mood_bg_y1)],
+        radius=15,
+        fill=(230, 230, 230)
+    )
 
-        # Render the BMP
-        render_image(f"{current:.2f}", trend, forecast, mood)
+    # Center text horizontally within each rectangle
+    def draw_centered_text(text, font, y_top, bg_x0, bg_x1):
+        text_width, text_height = draw.textsize(text, font=font)
+        x = bg_x0 + (bg_x1 - bg_x0 - text_width) // 2
+        draw.text((x, y_top + ( ( (bg_x1 - bg_x0) // 10 ) ), text), font=font, fill=(0, 0, 0))
+        draw.text((x, y_top + ( ( (bg_x1 - bg_x0) // 10 ) )), text, font=font, fill=(0, 0, 0))
+        return
 
-        timestamp = datetime.datetime.now().strftime("%Y-%m-%d-plugin-T%H:%M:%S")
+    # Draw price
+    price_text = f"Price: ${price}"
+    price_text_width, price_text_height = draw.textsize(price_text, font=font_large)
+    price_x = price_bg_x0 + (price_bg_x1 - price_bg_x0 - price_text_width) // 2
+    price_y = price_bg_y0 + ( (price_bg_y1 - price_bg_y0 - price_text_height) // 2 )
+    draw.text((price_x, price_y), price_text, font=font_large, fill=(0, 0, 0))
 
-        return jsonify({
-            "image_url": "https://trmnl-comed-plugin-sdi1.onrender.com/static/image.bmp",
-            "filename": timestamp,
-            "update_firmware": False
-        })
-    except Exception as e:
-        return jsonify({
-            "error": str(e),
-            "image_url": None,
-            "filename": None,
-            "update_firmware": False
-        }), 500
+    # Draw trend
+    trend_text_width, trend_text_height = draw.textsize(trend, font=font_medium)
+    trend_x = trend_bg_x0 + (trend_bg_x1 - trend_bg_x0 - trend_text_width) // 2
+    trend_y = trend_bg_y0 + ( (trend_bg_y1 - trend_bg_y0 - trend_text_height) // 2 )
+    draw.text((trend_x, trend_y), trend, font=font_medium, fill=(0, 0, 0))
 
-if __name__ == "__main__":
-    import os
-    port = int(os.environ.get("PORT", 8080))
-    app.run(debug=True, host="0.0.0.0", port=port)
+    # Draw forecast
+    forecast_text_width, forecast_text_height = draw.textsize(forecast, font=font_medium)
+    forecast_x = forecast_bg_x0 + (forecast_bg_x1 - forecast_bg_x0 - forecast_text_width) // 2
+    forecast_y = forecast_bg_y0 + ( (forecast_bg_y1 - forecast_bg_y0 - forecast_text_height) // 2 )
+    draw.text((forecast_x, forecast_y), forecast, font=font_medium, fill=(0, 0, 0))
+
+    # Draw mood
+    mood_text_width, mood_text_height = draw.textsize(mood, font=font_medium)
+    mood_x = mood_bg_x0 + (mood_bg_x1 - mood_bg_x0 - mood_text_width) // 2
+    mood_y = mood_bg_y0 + ( (mood_bg_y1 - mood_bg_y0 - mood_text_height) // 2 )
+    draw.text((mood_x, mood_y), mood, font=font_medium, fill=(0, 0, 0))
+
+    # Draw updated timestamp in lower-right corner with proper spacing
+    updated_text = "Updated: now"
+    updated_text_width, updated_text_height = draw.textsize(updated_text, font=font_small)
+    updated_x = 800 - updated_text_width - padding
+    updated_y = 480 - updated_text_height - padding
+    draw.text((updated_x, updated_y), updated_text, font=font_small, fill=(0, 0, 0))
+
+    # Save image as BMP
+    img.save("static/image.bmp")
