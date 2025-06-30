@@ -16,9 +16,9 @@ def render_image(price, trend, forecast, mood):
 
     # Background rectangles with lighter gray fill
     # Price background
-    price_bg_x0 = 100
+    price_bg_x0 = 0
     price_bg_y0 = 50
-    price_bg_x1 = 700
+    price_bg_x1 = 780
     price_bg_y1 = 130
     draw.rounded_rectangle(
         [(price_bg_x0, price_bg_y0), (price_bg_x1, price_bg_y1)],
@@ -27,9 +27,9 @@ def render_image(price, trend, forecast, mood):
     )
 
     # Trend background
-    trend_bg_x0 = 100
+    trend_bg_x0 = 0
     trend_bg_y0 = price_bg_y1 + section_spacing
-    trend_bg_x1 = 700
+    trend_bg_x1 = 780
     trend_bg_y1 = trend_bg_y0 + 60
     draw.rounded_rectangle(
         [(trend_bg_x0, trend_bg_y0), (trend_bg_x1, trend_bg_y1)],
@@ -38,9 +38,9 @@ def render_image(price, trend, forecast, mood):
     )
 
     # Forecast background
-    forecast_bg_x0 = 100
+    forecast_bg_x0 = 0
     forecast_bg_y0 = trend_bg_y1 + section_spacing
-    forecast_bg_x1 = 700
+    forecast_bg_x1 = 780
     forecast_bg_y1 = forecast_bg_y0 + 60
     draw.rounded_rectangle(
         [(forecast_bg_x0, forecast_bg_y0), (forecast_bg_x1, forecast_bg_y1)],
@@ -49,9 +49,9 @@ def render_image(price, trend, forecast, mood):
     )
 
     # Mood background
-    mood_bg_x0 = 100
+    mood_bg_x0 = 0
     mood_bg_y0 = forecast_bg_y1 + section_spacing
-    mood_bg_x1 = 700
+    mood_bg_x1 = 780
     mood_bg_y1 = mood_bg_y0 + 60
     draw.rounded_rectangle(
         [(mood_bg_x0, mood_bg_y0), (mood_bg_x1, mood_bg_y1)],
