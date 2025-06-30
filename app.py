@@ -35,7 +35,7 @@ def display():
         updated_str = f"{minutes_ago} min ago"
 
         # Render the BMP
-        render_image(f"{current:.2f}", trend, forecast, mood, updated_str)
+        render_image(f"{current:.2f}", trend, forecast, mood)
 
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d-plugin-T%H:%M:%S")
 
