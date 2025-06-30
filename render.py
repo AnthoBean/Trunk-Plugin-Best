@@ -70,3 +70,7 @@ def render_image(price, trend, forecast, mood):
         requests.get("https://usetrmnl.com/api/custom_plugins/498803d1-bff0-4f07-8622-350eafe5588d")
     except Exception as e:
         print("Failed to notify TRMNL:", e)
+
+import os
+port = int(os.environ.get("PORT", 10000))
+app.run(host="0.0.0.0", port=port)
